@@ -9,18 +9,17 @@ public class DataGeneratorUtility {
 	 * @return
 	 */
 	public static String getPNRPrefix() {
-	    int leftLimit = 65; // letter 'A'
-	    int rightLimit = 90; // letter 'Z'
+	    int leftLimit = Constant.ASCII_A; // letter 'A'
+	    int rightLimit = Constant.ASCII_Z; // letter 'Z'
 	    int targetStringLength = 1;
 	    Random random = new Random();
 
-	    String generatedString = random.ints(leftLimit, rightLimit + 1)
+	    String generatedString = random.ints(leftLimit, rightLimit + Constant.ONE)
 	      .limit(targetStringLength)
 	      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
 	      .toString();
 
 	    return generatedString;
-	
 	}
 
 	/**
@@ -29,12 +28,12 @@ public class DataGeneratorUtility {
 	 * @return
 	 */
 	public static Integer getVersionLimit(Integer totalRecords) {
-		if(totalRecords < 10000) {
-			return 10;
-		} else if(totalRecords > 10000 && totalRecords < 100000){
-			return 20;
+		if(totalRecords < Constant.TEN_THOUSAND) {
+			return Constant.TEN;
+		} else if(totalRecords > Constant.TEN_THOUSAND && totalRecords < Constant.ONE_LAKH){
+			return Constant.TWENTY;
 		} else {
-			return 30;
+			return Constant.THIRTY;
 		}
 	}
 
@@ -45,10 +44,7 @@ public class DataGeneratorUtility {
 	 */
 	public static Integer getRandomVersion(Integer maxLimit) {
 	    Random random = new Random();
-	    return random.ints(1,maxLimit).findFirst().getAsInt();
+	    return random.ints(Constant.ONE,maxLimit).findFirst().getAsInt();
 	}
-
-
-
 }
 

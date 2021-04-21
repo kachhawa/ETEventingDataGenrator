@@ -1,4 +1,5 @@
 package com.infogain.eteventing.generator;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -9,6 +10,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import com.infogain.eteventing.dto.CSVDataDTO;
+import com.infogain.eteventing.util.Constant;
 import com.infogain.eteventing.util.DataGeneratorUtility;
 
 public class CSVDataGenerator {
@@ -25,7 +27,6 @@ public class CSVDataGenerator {
 		        inputData.next();
 		    }
 		    Integer inputRecords = inputData.nextInt();  
-		    System.out.println("Processing for total records : " + inputRecords);  
 
 		    // Get version limit as per given input records
 			Integer versionLimit = DataGeneratorUtility.getVersionLimit(inputRecords);
@@ -36,16 +37,14 @@ public class CSVDataGenerator {
 			Timestamp currentTimeStamp = new Timestamp(System.currentTimeMillis());
 			
 			/** 2. CSV File Creation and set header data */
-			String FILE_NAME = inputRecords + "_" + currentTimeStamp.getTime()+ ".csv";
-			FileWriter csvWriter = new FileWriter(FILE_NAME);
-			csvWriter.append("locator,version,parent_locator,created,data");
-			csvWriter.append("\n");
-
-			System.out.println("Storing data in file : " + FILE_NAME);
+			String fileName = inputRecords + Constant.UNDERSCORE + currentTimeStamp.getTime()+ Constant.CSV_EXT;
+			FileWriter csvWriter = new FileWriter(fileName);
+			File csvFile = new File(fileName);
+			csvWriter.append(Constant.CSV_HEADER);
+			csvWriter.append(Constant.NEWLINE);
 
 			// Locator map which stores all locators with default value which will used to create locator version sequencing   
 			Map<String,Integer> locatorVersionMap = new HashMap<>();
-
 
 			// Parent Data Keeper : Will keep all the version 1 and 2 locator data and will be appended first 
 			Set<CSVDataDTO> parentDataKeeper = new HashSet<>();
@@ -54,28 +53,28 @@ public class CSVDataGenerator {
 			Set<CSVDataDTO> dataKeeper = new HashSet<>();
 			
 			/** 3. Iterate over input records and increment the data keeper to track the total number of created records */
-			for(Integer increment=1, dataKeeperSize = 1; increment <= inputRecords && dataKeeperSize <= inputRecords; increment++) {
+			for(Integer increment=Constant.ONE, dataKeeperSize = Constant.ONE; increment <= inputRecords && dataKeeperSize <= inputRecords; increment++) {
 				String padded = String.format("%05d" , increment);  // Generate String of 5 char with increment value and pad remaining with zero
 				String locator = prefix + padded;  // locator is combination of prefix and padded value
 				
-				locatorVersionMap.put(locator, 1);
+				locatorVersionMap.put(locator, Constant.ONE);
 				Integer randomVersion = DataGeneratorUtility.getRandomVersion(versionLimit); // Get random version which depends on limit
 
 				/** Iterate over version for each locator */
-				for(Integer version=1; version <= randomVersion  && dataKeeperSize <= inputRecords; version++) {
+				for(Integer version=Constant.ONE; version <= randomVersion  && dataKeeperSize <= inputRecords; version++) {
 					CSVDataDTO data = new CSVDataDTO();
 					String parentLocator = "";
 					data.setLocator(locator);
 					data.setVersion(version.toString());
 					data.setParent_locator(parentLocator);
-					data.setData("\\\"{\\\"pnr\\\":\\\"{}\\\"\\\"cart\\\":\\\"{}\\\"\\\"session\\\":\\\"{}\\\"");
+					data.setData(Constant.DTO_DATA);
 
-					if(version == 1 || version == 2) {
+					if(version == Constant.ONE || version == Constant.TWO) {
 						parentDataKeeper.add(data);
 						dataKeeperSize++;
 					} else {
-						if(version == randomVersion && increment > 1 && increment % 2 == 0) {
-							padded = String.format("%05d" , increment-1);
+						if(version == randomVersion && increment > Constant.ONE && increment % Constant.TWO == 0) {
+							padded = String.format("%05d" , increment-Constant.ONE);
 							parentLocator = prefix + padded;
 							data.setParent_locator(parentLocator);
 						}
@@ -95,7 +94,7 @@ public class CSVDataGenerator {
 	
 			csvWriter.flush();
 			csvWriter.close();
-			System.out.println("Completed");
+			System.out.println("Processed file : " + csvFile.getAbsolutePath());
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
@@ -113,9 +112,9 @@ public class CSVDataGenerator {
 		try {
 			Integer versionVal = locatorVersionMap.get(data.getLocator());
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-			csvWriter.append(data.getLocator()+ "," + versionVal + "," + data.getParent_locator() + "," + timestamp.toInstant() + "," + data.getData());
+			csvWriter.append(data.getLocator()+ Constant.COMMA + versionVal + Constant.COMMA + data.getParent_locator() + Constant.COMMA + timestamp.toInstant() + Constant.COMMA + data.getData());
 			locatorVersionMap.put(data.getLocator(),++versionVal);
-			csvWriter.append("\n");
+			csvWriter.append(Constant.NEWLINE);
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
