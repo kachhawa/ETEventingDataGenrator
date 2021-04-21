@@ -26,4 +26,13 @@
 *  - - Locator's last digit is even and 
 *  - - It should not be first locator, as it is referring to it's previous locator
 
-### 2. **DataGeneratorUtility.java** : Utility file 
+### 2. **DataGeneratorUtility.java** : Utility file have three methods:
+*  - **getPNRPrefix()** : Get Locator's prefix from the range A to Z
+*  - **getVersionLimit()** : Based on Total Records, it will fetch version, below is criteria:
+*  - - If total records are less than 10000, then it will user version 10
+*  - - If total records are between 10000 and 100000, then it will user version 20
+*  - - If total records are greater than 100000, then it will user version 30
+*  - **getRandomVersion()** : Get Random Version as per given version number. Ex: If version number is 20, it can given any number between 1 to 20.
+
+### 3. **Constant.java** : Constant declaration
+### 4. **CSVDataDTO.java** : DTO declaration
