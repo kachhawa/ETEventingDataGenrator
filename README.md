@@ -1,17 +1,29 @@
-# Problem Statement :
-* 1. Store data randomly
-* 2. While storing the data randomly, take care that parent_locator should stored before the locator
-* 3. Version sequencing
-```
-# Resolution :
-* 1. Store data randomly : Used Sets to store data for random 
-```	
-* 2. While storing the data randomly, take care that parent_locator should stored before the locator:
-*	Created two Sets : 
-*	- parentDataKeeper(parent_locator) : Store Version 1 and 2 data for all PNR Number. So that can be stored before the locator
-*	- dataKeeper(locator) : Store data from Version 3 to 10. On 10th version, storing parent_locator
-```				
-* 3. Version sequencing :
-*	- Create CSVDataDTO class which have locator,version,parent_locator,data fields
-*	- Create a Map which have key as locator and value as default increment value 1
-*	- While iterating over the Set, increment the version value and use the version value stored in map
+# How to execute JAR :
+### 1. Open Command Prompt
+### 2. Open location of ETEventingDataGenrator.jar file
+### 3. Run below command in Command Prompt:
+###    **java -jar ETEventingDataGenrator.jar**
+### 4. Enter total number of records to be generated. Values tested from 1 to 500000
+### 5. After processing, program will show processed file name with location.
+
+
+# Files Description
+### 1. **CSVDataGenerator.java** : Below are the step by step explanation of logic of this file : 
+* Get total number of generated records from command line
+* Set various variables like : 
+* - **versionLimit** : Get version limit as per given input records 
+* - **prefix** : Get random prefix alphabet in between A to Z
+* - **csvWriter** : Create CSV, set headers 
+* - **Parent Data Keeper Set** : Will keep all the version 1 and 2 locator data and will be appended first 
+* - **Normal Data Keeper Set** : Rest of version data will be kept here and this data will be added later 
+* - **locatorVersionMap** : Stores all locators with default value which will used to create locator version sequencing.
+* Inside loop, iterate over input records and increment the data keeper to track the total number of created records. 
+*  - With versionLimit, random version number will generated in the given limit.
+*  - According to the fetched randomVersion, version of the locator will be created.
+*  - If version is either 1 or 2, it will be added in parentDataKeeper else it will be stored in dataKeeper.
+*  - Parent locator also set in dataKeeper. Parent Locator will be set only if
+*  - - Version number is equivalent to randomVersion
+*  - - Locator's last digit is even and 
+*  - - It should not be first locator, as it is referring to it's previous locator
+
+### 2. **DataGeneratorUtility.java** : Utility file 

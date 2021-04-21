@@ -52,7 +52,15 @@ public class CSVDataGenerator {
 			// Rest of version data will be kept here and this data will be added later 
 			Set<CSVDataDTO> dataKeeper = new HashSet<>();
 			
-			/** 3. Iterate over input records and increment the data keeper to track the total number of created records */
+			/** 3. Iterate over input records and increment the data keeper to track the total number of created records. 
+			 * With versionLimit, random version number will generated in the given limit.
+			 * According to the fetched randomVersion, version of the locator will be created.
+			 * If version is either 1 or 2, it will be added in parentDataKeeper else it will be stored in dataKeeper.
+			 * Parent locator also set in dataKeeper. Parent Locator will be set only if
+			 * 		- Version number is equivalent to randomVersion
+			 * 		- Locator's last digit is even and 
+			 *      - It should not be first locator, as it is referring to it's previous locator
+			 * */
 			for(Integer increment=Constant.ONE, dataKeeperSize = Constant.ONE; increment <= inputRecords && dataKeeperSize <= inputRecords; increment++) {
 				String padded = String.format("%05d" , increment);  // Generate String of 5 char with increment value and pad remaining with zero
 				String locator = prefix + padded;  // locator is combination of prefix and padded value
